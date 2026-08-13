@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подключение подписки VPN</title>
+    <style>
+        :root {
+            --bg: #04070a;
+            --bg-gradient: radial-gradient(1200px 600px at 50% -10%, rgba(53, 255, 139, 0.12), transparent 70%), #04070a;
+            --card-bg: linear-gradient(180deg, #0a1210, #070d0c);
+            --line: rgba(53, 255, 139, 0.16);
+            --line-active: rgba(53, 255, 139, 0.40);
+            --acc: #35ff8b;
+            --acc-hover: #19c96a;
+            --txt: #d7f0e2;
+            --mut: #6f8a7c;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0; min-height: 100vh;
+            background: var(--bg-gradient); color: var(--txt);
+            font-family: ui-monospace, "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+            display: flex; align-items: center; justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .card {
+            position: relative; width: min(400px, calc(100% - 32px));
+            background: var(--card-bg); border: 1px solid var(--line); border-radius: 16px;
+            padding: 30px 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); text-align: center;
+        }
+
+        .card::before, .card::after { content: ""; position: absolute; width: 16px; height: 16px; pointer-events: none; }
+        .card::before { left: -1px; top: -1px; border-left: 2px solid var(--acc); border-top: 2px solid var(--acc); border-top-left-radius: 16px; }
+        .card::after { right: -1px; bottom: -1px; border-right: 2px solid var(--acc); border-bottom: 2px solid var(--acc); border-bottom-right-radius: 16px; }
+
+        h2 { margin: 0 0 8px 0; font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--acc); font-weight: 700; }
+        p { color: var(--mut); font-size: 13px; margin: 0 0 24px 0; line-height: 1.5; }
+        .form-group { text-align: left; margin-bottom: 24px; }
+        label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mut); margin-bottom: 8px; font-weight: 600; }
+        
+        .select-wrapper { position: relative; }
+        select {
+            width: 100%; padding: 12px 16px; background: #071410; border: 1px solid var(--line);
+            border-radius: 10px; color: var(--txt); font-family: inherit; font-size: 14px;
+            outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
+        }
+        select:focus { border-color: var(--line-active); box-shadow: 0 0 10px rgba(53, 255, 139, 0.1); }
+        .select-wrapper::after { content: "▼"; font-size: 10px; color: var(--acc); position: absolute; right: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+
+        .btn {
+            width: 100%; padding: 14px; background: linear-gradient(180deg, rgba(53, 255, 139, 0.15), rgba(53, 255, 139, 0.04));
+            border: 1px solid var(--acc); border-radius: 10px; color: var(--acc); font-family: inherit;
+            font-size: 14px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s;
+        }
+        .btn:hover { background: rgba(53, 255, 139, 0.2); box-shadow: 0 0 15px rgba(53, 255, 139, 0.3); }
+        .btn:active { transform: scale(0.98); }
+        
+        /* Кнопка скачивания Happ */
+        .btn.download-btn {
+            background: #08130f; border-color: var(--line); color: var(--txt); font-weight: 500;
+        }
+        .btn.download-btn:hover { background: #0c1f18; border-color: var(--line-active); }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Импорт подписки</h2>
+        <p>Выберите ваше приложение для автоматической настройки конфигурации VPN</p>
+
+        <div class="form-group">
+            <label for="client-select">Ваш VPN клиент</label>
+            <div class="select-wrapper">
+                <select id="client-select" onchange="updateLinks()">
+                    <option value="Happ" selected>Happ</option>
+                    <option value="Incy">Incy</option>
+                    <option value="v2rayTun">v2rayTun</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <!-- Кнопка 1: Добавление подписки -->
+            <a id="action-btn" class="btn" href="#">Добавить в Happ</a>
+            
+            <!-- Кнопка 2: Перенаправление на главную Happ -->
+            <a class="btn download-btn" href="https://happ.info/" target="_blank">Скачать VPN клиент</a>
+        </div>
+    </div>
+
+    <script>
+        // Точный адрес подписки
+        const subscriptionUrl = "https://tisonanvpn.duckdns.org/sub/f01801ca-4264-453e-bca1-2d9abe45b6b5";
+
+        function updateLinks() {
+            const select = document.getElementById('client-select');
+            const actionBtn = document.getElementById('action-btn');
+            const selectedClient = select.value;
+
+            actionBtn.innerText = `Добавить в ${selectedClient}`;
+
+            // Форматы импорта для каждого приложения
+            if (selectedClient === 'Happ') {
+                // Happ использует схему happ://sub/{subscriptionUrl}
+                actionBtn.href = `happ://sub/${encodeURIComponent(subscriptionUrl)}`;
+            } else if (selectedClient === 'Incy') {
+                actionBtn.href = `incy://import?url=${encodeURIComponent(subscriptionUrl)}`;
+            } else if (selectedClient === 'v2rayTun') {
+                actionBtn.href = `v2raytun://import/${encodeURIComponent(subscriptionUrl)}`;
+            }
+        }
+
+        // Инициализация при загрузке
+        updateLinks();
+    </script>
+</body>
+</html>
