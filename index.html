@@ -1,124 +1,488 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подключение подписки VPN</title>
+    <title>TVPNAdd - Подключение подписки</title>
     <style>
-        :root {
-            --bg: #04070a;
-            --bg-gradient: radial-gradient(1200px 600px at 50% -10%, rgba(53, 255, 139, 0.12), transparent 70%), #04070a;
-            --card-bg: linear-gradient(180deg, #0a1210, #070d0c);
-            --line: rgba(53, 255, 139, 0.16);
-            --line-active: rgba(53, 255, 139, 0.40);
-            --acc: #35ff8b;
-            --acc-hover: #19c96a;
-            --txt: #d7f0e2;
-            --mut: #6f8a7c;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { box-sizing: border-box; }
 
         body {
-            margin: 0; padding: 0; min-height: 100vh;
-            background: var(--bg-gradient); color: var(--txt);
-            font-family: ui-monospace, "JetBrains Mono", "Cascadia Code", Consolas, monospace;
-            display: flex; align-items: center; justify-content: center;
-            -webkit-font-smoothing: antialiased;
+            background: linear-gradient(135deg, #0a0f0d 0%, #141a17 100%);
+            color: #EEECE5;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
         }
 
-        .card {
-            position: relative; width: min(400px, calc(100% - 32px));
-            background: var(--card-bg); border: 1px solid var(--line); border-radius: 16px;
-            padding: 30px 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); text-align: center;
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: linear-gradient(145deg, #0f1512 0%, #1a211d 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
 
-        .card::before, .card::after { content: ""; position: absolute; width: 16px; height: 16px; pointer-events: none; }
-        .card::before { left: -1px; top: -1px; border-left: 2px solid var(--acc); border-top: 2px solid var(--acc); border-top-left-radius: 16px; }
-        .card::after { right: -1px; bottom: -1px; border-right: 2px solid var(--acc); border-bottom: 2px solid var(--acc); border-bottom-right-radius: 16px; }
+        .logo {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 1.25rem;
+            background: rgba(0, 255, 153, 0.08);
+            border-radius: 20px;
+            padding: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 255, 153, 0.12);
+        }
 
-        h2 { margin: 0 0 8px 0; font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--acc); font-weight: 700; }
-        p { color: var(--mut); font-size: 13px; margin: 0 0 24px 0; line-height: 1.5; }
-        .form-group { text-align: left; margin-bottom: 24px; }
-        label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mut); margin-bottom: 8px; font-weight: 600; }
-        
-        .select-wrapper { position: relative; }
+        .logo svg {
+            width: 44px;
+            height: 44px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00FF99 0%, #00CC7A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+
+        .select-wrapper {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .select-wrapper label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
         select {
-            width: 100%; padding: 12px 16px; background: #071410; border: 1px solid var(--line);
-            border-radius: 10px; color: var(--txt); font-family: inherit; font-size: 14px;
-            outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: #EEECE5;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: border-color 0.2s;
         }
-        select:focus { border-color: var(--line-active); box-shadow: 0 0 10px rgba(53, 255, 139, 0.1); }
-        .select-wrapper::after { content: "▼"; font-size: 10px; color: var(--acc); position: absolute; right: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
-        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        select:focus {
+            border-color: rgba(0, 255, 153, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 153, 0.06);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
         .btn {
-            width: 100%; padding: 14px; background: linear-gradient(180deg, rgba(53, 255, 139, 0.15), rgba(53, 255, 139, 0.04));
-            border: 1px solid var(--acc); border-radius: 10px; color: var(--acc); font-family: inherit;
-            font-size: 14px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer;
-            display: inline-flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn:hover { background: rgba(53, 255, 139, 0.2); box-shadow: 0 0 15px rgba(53, 255, 139, 0.3); }
-        .btn:active { transform: scale(0.98); }
-        
-        /* Кнопка скачивания Happ */
-        .btn.download-btn {
-            background: #08130f; border-color: var(--line); color: var(--txt); font-weight: 500;
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00FF99 0%, #00CC7A 100%);
+            color: #0a0f0d;
+            box-shadow: 0 4px 24px rgba(0, 255, 153, 0.2);
         }
-        .btn.download-btn:hover { background: #0c1f18; border-color: var(--line-active); }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 32px rgba(0, 255, 153, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: #EEECE5;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.98);
+        }
+
+        .link-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .link-box {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            user-select: all;
+            word-break: break-all;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: left;
+        }
+
+        .link-box:hover {
+            border-color: rgba(0, 255, 153, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .link-box .label {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 4px;
+        }
+
+        .link-box .link {
+            color: #00FF99;
+            font-weight: 500;
+        }
+
+        .note {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            line-height: 1.6;
+        }
+
+        .note strong {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Toast уведомление */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a211d;
+            border: 1px solid rgba(0, 255, 153, 0.25);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: #00FF99;
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            max-width: calc(100% - 32px);
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.error {
+            border-color: rgba(255, 107, 107, 0.4);
+            color: #ff6b6b;
+        }
+
+        .status-card {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            background: rgba(255, 193, 7, 0.04);
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .status-card.error {
+            border-color: rgba(255, 107, 107, 0.3);
+            background: rgba(255, 107, 107, 0.04);
+            color: #ff6b6b;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Импорт подписки</h2>
-        <p>Выберите ваше приложение для автоматической настройки конфигурации VPN</p>
+    <div class="container">
+        <!-- Логотип -->
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="#00FF99"/>
+            </svg>
+        </div>
 
-        <div class="form-group">
+        <h1>Импорт подписки</h1>
+        <p class="subtitle">Выберите клиент для автоматической настройки</p>
+
+        <!-- Выбор клиента -->
+        <div class="select-wrapper">
             <label for="client-select">Ваш VPN клиент</label>
-            <div class="select-wrapper">
-                <select id="client-select" onchange="updateLinks()">
-                    <option value="Happ" selected>Happ</option>
-                    <option value="Incy">Incy</option>
-                    <option value="v2rayTun">v2rayTun</option>
-                </select>
+            <select id="client-select" onchange="updateUI()">
+                <option value="Happ" selected>Happ</option>
+                <option value="Incy">Incy</option>
+                <option value="v2rayTun">v2rayTun</option>
+            </select>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="btn-group">
+            <button id="action-btn" class="btn btn-primary" onclick="handleAction()">
+                Добавить в Happ
+            </button>
+            <a class="btn btn-secondary" href="https://happ.info/" target="_blank">
+                Скачать VPN клиент
+            </a>
+        </div>
+
+        <!-- Ссылка для копирования -->
+        <div class="link-section">
+            <div class="link-box" id="linkBox" onclick="copyLink()">
+                <span class="label">📋 Нажмите чтобы скопировать ссылку</span>
+                <span class="link" id="linkDisplay">happ://sub/https://tisonanvpn.duckdns.org/sub/f01801ca-4264-453e-bca1-2d9abe45b6b5</span>
             </div>
         </div>
 
-        <div class="btn-group">
-            <!-- Кнопка 1: Добавление подписки -->
-            <a id="action-btn" class="btn" href="#">Добавить в Happ</a>
-            
-            <!-- Кнопка 2: Перенаправление на главную Happ -->
-            <a class="btn download-btn" href="https://happ.info/" target="_blank">Скачать VPN клиент</a>
+        <div class="note">
+            💡 <strong>Не открывается?</strong> Скопируйте ссылку выше и вставьте вручную в адресную строку браузера.
         </div>
+
+        <!-- Статус -->
+        <div id="status-card" class="status-card hidden"></div>
     </div>
 
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <script>
-        // Точный адрес подписки
-        const subscriptionUrl = "https://tisonanvpn.duckdns.org/sub/f01801ca-4264-453e-bca1-2d9abe45b6b5";
+        // === КОНФИГУРАЦИЯ ===
+        const SUBSCRIPTION_URL = "https://tisonanvpn.duckdns.org/sub/f01801ca-4264-453e-bca1-2d9abe45b6b5";
 
-        function updateLinks() {
-            const select = document.getElementById('client-select');
-            const actionBtn = document.getElementById('action-btn');
-            const selectedClient = select.value;
+        // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
 
-            actionBtn.innerText = `Добавить в ${selectedClient}`;
+        function getClient() {
+            return document.getElementById('client-select').value;
+        }
 
-            // Форматы импорта для каждого приложения
-            if (selectedClient === 'Happ') {
-                // Happ использует схему happ://sub/{subscriptionUrl}
-                actionBtn.href = `happ://sub/${encodeURIComponent(subscriptionUrl)}`;
-            } else if (selectedClient === 'Incy') {
-                actionBtn.href = `incy://import?url=${encodeURIComponent(subscriptionUrl)}`;
-            } else if (selectedClient === 'v2rayTun') {
-                actionBtn.href = `v2raytun://import/${encodeURIComponent(subscriptionUrl)}`;
+        function getDeepLink(client) {
+            const encoded = encodeURIComponent(SUBSCRIPTION_URL);
+            switch (client) {
+                case 'Happ':
+                    return `happ://sub/${encoded}`;
+                case 'Incy':
+                    return `incy://import?url=${encoded}`;
+                case 'v2rayTun':
+                    return `v2raytun://import/${encoded}`;
+                default:
+                    return '';
             }
         }
 
-        // Инициализация при загрузке
-        updateLinks();
+        function getDownloadUrl(client) {
+            switch (client) {
+                case 'Happ':
+                    return 'https://happ.info/';
+                case 'Incy':
+                    return 'https://apps.apple.com/ru/app/incy/id6756943388';
+                case 'v2rayTun':
+                    return 'https://github.com/v2ray/v2ray-core/releases';
+                default:
+                    return 'https://happ.info/';
+            }
+        }
+
+        // === ПОКАЗ УВЕДОМЛЕНИЙ ===
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (isError ? ' error' : '');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showStatus(message, isError = false) {
+            const card = document.getElementById('status-card');
+            card.textContent = message;
+            card.className = 'status-card' + (isError ? ' error' : '');
+            card.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            document.getElementById('status-card').classList.add('hidden');
+        }
+
+        // === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
+
+        function updateUI() {
+            const client = getClient();
+            const btn = document.getElementById('action-btn');
+            const linkDisplay = document.getElementById('linkDisplay');
+
+            btn.textContent = `Добавить в ${client}`;
+            linkDisplay.textContent = getDeepLink(client);
+            hideStatus();
+        }
+
+        // === ОСНОВНАЯ ЛОГИКА ===
+
+        function handleAction() {
+            const client = getClient();
+            const link = getDeepLink(client);
+
+            if (!link) {
+                showToast('❌ Ошибка: ссылка не сформирована', true);
+                return;
+            }
+
+            showToast(`⏳ Открываем ${client}...`, false);
+
+            // Способ 1: Попытка открыть через window.location
+            try {
+                window.location.href = link;
+            } catch (e) {
+                // Игнорируем
+            }
+
+            // Способ 2: Через iframe (fallback для некоторых браузеров)
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = link;
+                document.body.appendChild(iframe);
+                setTimeout(() => {
+                    if (iframe.parentNode) iframe.remove();
+                }, 3000);
+            } catch (e) {
+                // Игнорируем
+            }
+
+            // Способ 3: Через создание и клик по ссылке
+            try {
+                const a = document.createElement('a');
+                a.href = link;
+                a.style.display = 'none';
+                a.rel = 'noopener noreferrer';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    if (a.parentNode) a.remove();
+                }, 3000);
+            } catch (e) {
+                // Игнорируем
+            }
+
+            // Показываем подсказку если не открылось
+            setTimeout(() => {
+                showToast(`💡 Если ${client} не открылся, скопируйте ссылку вручную`, false);
+            }, 2000);
+        }
+
+        // === КОПИРОВАНИЕ ССЫЛКИ ===
+
+        function copyLink() {
+            const linkDisplay = document.getElementById('linkDisplay');
+            const link = linkDisplay.textContent;
+
+            if (!link) {
+                showToast('❌ Нет ссылки для копирования', true);
+                return;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link)
+                    .then(() => {
+                        showToast('✅ Ссылка скопирована!', false);
+                        // Визуальная обратная связь
+                        const box = document.getElementById('linkBox');
+                        box.style.borderColor = 'rgba(0, 255, 153, 0.4)';
+                        setTimeout(() => {
+                            box.style.borderColor = '';
+                        }, 1000);
+                    })
+                    .catch(() => {
+                        fallbackCopy(link);
+                    });
+            } else {
+                fallbackCopy(link);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ Ссылка скопирована!', false);
+            } catch (err) {
+                showToast('❌ Не удалось скопировать', true);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        document.addEventListener('DOMContentLoaded', updateUI);
     </script>
 </body>
 </html>
